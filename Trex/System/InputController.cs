@@ -24,7 +24,10 @@ namespace TrexRunner.System
                 if (_trex.State != TrexState.Jumping)
                     _trex.BeginJump();
             }
-            else if (!keyboardState.IsKeyDown(Keys.Up) && _previousKeyboardState.IsKeyDown(Keys.Up))
+            // if we check _previousKeyboardState.IsKeyDown
+            // Cancel Jump will only be called on the frame the keyboard is released
+
+            else if (!keyboardState.IsKeyDown(Keys.Up))
             {
                 if (_trex.State == TrexState.Jumping)
                     _trex.CancelJump();
