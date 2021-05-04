@@ -34,11 +34,14 @@ namespace TrexRunner
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
+        private EntityManager _entityManager;
+
         public TRexGame()
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+            _entityManager = new EntityManager();
         }
 
         protected override void Initialize()
@@ -63,6 +66,8 @@ namespace TrexRunner
             _trex = new Trex(_spriteSheetTexture, new Vector2(TREX_START_POS_X, TREX_START_POS_Y - Trex.TREX_DEFAULT_SPRITE_HEIGHT), _sfxButtonPress);
 
             _inputController = new InputController(_trex);
+
+            _entityManager.AddEntity(_trex);
         }
 
         protected override void Update(GameTime gameTime)
@@ -72,7 +77,7 @@ namespace TrexRunner
 
             base.Update(gameTime);
 
-            _trex.Update(gameTime);
+            _entityManager.Update(gameTime);
             _inputController.ProcessControls(gameTime);
         }
 
@@ -81,7 +86,7 @@ namespace TrexRunner
             GraphicsDevice.Clear(Color.White);
             Sprite trexSprite = new Sprite(_spriteSheetTexture, 848, 0, 44, 52);
             _spriteBatch.Begin();
-            _trex.Draw(_spriteBatch, gameTime);
+            _entityManager.Draw(_spriteBatch, gameTime);
             _spriteBatch.End();
 
             base.Draw(gameTime);

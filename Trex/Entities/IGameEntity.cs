@@ -3,7 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 
 namespace TrexRunner.Entities
 {
-    interface IGameEntity
+    public interface IGameEntity
     {
         int DrawOrder { get; }
 
