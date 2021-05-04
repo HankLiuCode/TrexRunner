@@ -7,7 +7,7 @@ using TrexRunner.Graphics;
 
 namespace TrexRunner.Entities
 {
-    class Trex : IGameEntity
+    public class Trex : IGameEntity
     {
         private const float RUN_ANIMATION_FRAME_LENGTH = 1 / 10f;
 
@@ -55,10 +55,7 @@ namespace TrexRunner.Entities
         private float _verticalVelocity;
         private float _startPosY;
         private float _dropVelocity;
-
         
-
-
 
         public int DrawOrder { get; set; }
         public Vector2 Position { get; set; }

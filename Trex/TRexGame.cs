@@ -21,20 +21,29 @@ namespace TrexRunner
 
         public const int TREX_START_POS_Y = WINDOW_HEIGHT - 16;
         public const int TREX_START_POS_X = 1;
-
+        private const int FADE_IN_ANIMATION_SPEED = 800;
         private SoundEffect _sfxHit;
         private SoundEffect _sfxButtonPress;
         private SoundEffect _sfxScoreReached;
 
         private Texture2D _spriteSheetTexture;
+        private Texture2D _fadeInTexture;
+
+        private float _fadeInTexturePosX;
 
         private Trex _trex;
         private InputController _inputController;
+
+        private GroundManager _groundManager;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
 
         private EntityManager _entityManager;
+
+        private KeyboardState _previousKeyboardState;
+
+        public GameState State { get; private set; }
 
         public TRexGame()
         {
@@ -42,6 +51,8 @@ namespace TrexRunner
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
             _entityManager = new EntityManager();
+            State = GameState.Initial;
+            _fadeInTexturePosX = Trex.TREX_DEFAULT_SPRITE_WIDTH;
         }
 
         protected override void Initialize()
@@ -63,11 +74,20 @@ namespace TrexRunner
             _sfxHit = Content.Load<SoundEffect>(ASSET_NAME_SFX_HIT);
             _sfxScoreReached = Content.Load<SoundEffect>(ASSET_NAME_SFX_SCORE_REACHED);
             _spriteSheetTexture = Content.Load<Texture2D>(ASSET_NAME_SPRITESHEET);
+            _fadeInTexture = new Texture2D(GraphicsDevice, 1, 1);
+            _fadeInTexture.SetData(new Color[] { Color.White });
+
             _trex = new Trex(_spriteSheetTexture, new Vector2(TREX_START_POS_X, TREX_START_POS_Y - Trex.TREX_DEFAULT_SPRITE_HEIGHT), _sfxButtonPress);
+            _trex.DrawOrder = 10;
 
             _inputController = new InputController(_trex);
 
+            _groundManager = new GroundManager(_spriteSheetTexture, _entityManager, _trex);
+
             _entityManager.AddEntity(_trex);
+            _entityManager.AddEntity(_groundManager);
+
+            _groundManager.Initialize();
         }
 
         protected override void Update(GameTime gameTime)
@@ -77,19 +97,53 @@ namespace TrexRunner
 
             base.Update(gameTime);
 
+            KeyboardState keyboardState = Keyboard.GetState();
+
+            if (State == GameState.Playing)
+                _inputController.ProcessControls(gameTime);
+
+            else if (State == GameState.Transition)
+                _fadeInTexturePosX += FADE_IN_ANIMATION_SPEED * (float) gameTime.ElapsedGameTime.TotalSeconds;
+
+            else if (State == GameState.Initial)
+            {
+                bool isStartKeyPressed = keyboardState.IsKeyDown(Keys.Up) || keyboardState.IsKeyDown(Keys.Space);
+                bool wasStartKeyPressed = _previousKeyboardState.IsKeyDown(Keys.Up) || _previousKeyboardState.IsKeyDown(Keys.Space);
+                if (isStartKeyPressed && !wasStartKeyPressed)
+                {
+                    StartGame();
+                }
+            }
             _entityManager.Update(gameTime);
-            _inputController.ProcessControls(gameTime);
+
+            _previousKeyboardState = keyboardState;
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.White);
-            Sprite trexSprite = new Sprite(_spriteSheetTexture, 848, 0, 44, 52);
             _spriteBatch.Begin();
             _entityManager.Draw(_spriteBatch, gameTime);
+
+            if(State == GameState.Initial || State == GameState.Transition)
+            {
+                _spriteBatch.Draw(_fadeInTexture, new Rectangle((int)_fadeInTexturePosX, 0, WINDOW_WIDTH, WINDOW_HEIGHT), Color.White);
+            }
+
             _spriteBatch.End();
 
             base.Draw(gameTime);
+        }
+
+        public bool StartGame()
+        {
+            if (State != GameState.Initial)
+                return false;
+
+            State = GameState.Transition;
+            _trex.BeginJump();
+
+            return true;
         }
     }
 }
