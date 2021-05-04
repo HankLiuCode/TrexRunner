@@ -98,5 +98,11 @@ namespace TrexRunner.Graphics
             return _frames[index];
         }
 
+        public void Clear()
+        {
+            Stop();
+            _frames.Clear();
+        }
+
     }
 }

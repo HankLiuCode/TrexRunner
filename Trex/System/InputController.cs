@@ -23,8 +23,11 @@ namespace TrexRunner.System
             {
                 if (_trex.State != TrexState.Jumping)
                     _trex.BeginJump();
-                else
-                    _trex.ContinueJump();
+            }
+            else if (!keyboardState.IsKeyDown(Keys.Up) && _previousKeyboardState.IsKeyDown(Keys.Up))
+            {
+                if (_trex.State == TrexState.Jumping)
+                    _trex.CancelJump();
             }
 
             // keyboardState is a struct, so it won't be referencing the same instance
