@@ -22,6 +22,9 @@ namespace TrexRunner
         public const int TREX_START_POS_Y = WINDOW_HEIGHT - 16;
         public const int TREX_START_POS_X = 1;
         private const int FADE_IN_ANIMATION_SPEED = 800;
+        private const int SCORE_BOARD_POS_X = WINDOW_WIDTH - 130;
+        private const int SCORE_BOARD_POS_Y = 10;
+
         private SoundEffect _sfxHit;
         private SoundEffect _sfxButtonPress;
         private SoundEffect _sfxScoreReached;
@@ -32,6 +35,7 @@ namespace TrexRunner
         private float _fadeInTexturePosX;
 
         private Trex _trex;
+        private ScoreBoard _scoreBoard;
         private InputController _inputController;
 
         private GroundManager _groundManager;
@@ -79,6 +83,11 @@ namespace TrexRunner
 
             _trex = new Trex(_spriteSheetTexture, new Vector2(TREX_START_POS_X, TREX_START_POS_Y - Trex.TREX_DEFAULT_SPRITE_HEIGHT), _sfxButtonPress);
             _trex.DrawOrder = 10;
+            _trex.JumpComplete += trex_JumpComplete;
+
+            _scoreBoard = new ScoreBoard(_spriteSheetTexture, new Vector2(SCORE_BOARD_POS_X, SCORE_BOARD_POS_Y), _trex);
+            //_scoreBoard.Score = 498;
+            //_scoreBoard.HighScore = 1234;
 
             _inputController = new InputController(_trex);
 
@@ -86,8 +95,19 @@ namespace TrexRunner
 
             _entityManager.AddEntity(_trex);
             _entityManager.AddEntity(_groundManager);
+            _entityManager.AddEntity(_scoreBoard);
 
             _groundManager.Initialize();
+        }
+
+        private void trex_JumpComplete(object sender, global::System.EventArgs e)
+        {
+            if (State == GameState.Transition)
+            {
+                State = GameState.Playing;
+                _trex.Initialize();
+
+            }
         }
 
         protected override void Update(GameTime gameTime)

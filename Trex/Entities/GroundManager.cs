@@ -50,7 +50,7 @@ namespace TrexRunner.Entities
 
         public void Update(GameTime gameTime)
         {
-            if(_groundTiles.Any() )
+            if(_groundTiles.Any())
             {
                 float maxPosX = _groundTiles.Max(g => g.PositionX);
                 if (maxPosX < 0)

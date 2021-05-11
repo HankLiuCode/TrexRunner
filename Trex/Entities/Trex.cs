@@ -39,7 +39,7 @@ namespace TrexRunner.Entities
         private const int TREX_DUCKING_SPRITE_ONE_POS_Y = 0;
 
         private const float DROP_VELOCITY = 500f;
-
+        private const float START_SPEED = 300f;
         private Sprite _idleBackgroundSprite;
         private Sprite _idleSprite;
         private Sprite _idleBlinkSprite;
@@ -55,13 +55,16 @@ namespace TrexRunner.Entities
         private float _verticalVelocity;
         private float _startPosY;
         private float _dropVelocity;
-        
+
+        public event EventHandler JumpComplete;
 
         public int DrawOrder { get; set; }
         public Vector2 Position { get; set; }
         public TrexState State { get; private set; }
         public bool IsAlive { get; private set; }
         public float Speed { get; private set; }
+
+
 
         public Trex(Texture2D spriteSheet, Vector2 position, SoundEffect jumpSound)
         {
@@ -118,6 +121,12 @@ namespace TrexRunner.Entities
             }
         }
 
+        public void Initialize()
+        {
+            Speed = START_SPEED;
+            State = TrexState.Running;
+        }
+
         public void Update(GameTime gameTime)
         {
             if (State == TrexState.Idle)
@@ -140,6 +149,7 @@ namespace TrexRunner.Entities
 
                 if(Position.Y >= _startPosY)
                 {
+                    OnJumpComplete();
                     Position = new Vector2(Position.X, _startPosY);
                     _verticalVelocity = 0;
                     State = TrexState.Running;
@@ -223,6 +233,12 @@ namespace TrexRunner.Entities
             _dropVelocity = DROP_VELOCITY;
             return true;
 
+        }
+
+        protected virtual void OnJumpComplete()
+        {
+            EventHandler handler = JumpComplete;
+            handler?.Invoke(this, EventArgs.Empty);
         }
     }
 }
