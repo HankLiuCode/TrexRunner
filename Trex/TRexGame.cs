@@ -95,7 +95,7 @@ namespace TrexRunner
             _groundManager = new GroundManager(_spriteSheetTexture, _entityManager, _trex);
             _obstacleManager = new ObstacleManager(_spriteSheetTexture, _entityManager, _trex, _scoreBoard);
 
-            _gameOverScreen = new GameOverScreen(_spriteSheetTexture);
+            _gameOverScreen = new GameOverScreen(_spriteSheetTexture, this);
             _gameOverScreen.Position = new Vector2(WINDOW_WIDTH / 2 - GameOverScreen.GAME_OVER_SPRITE_WIDTH / 2, WINDOW_HEIGHT - 80);
 
             _entityManager.AddEntity(_trex);
@@ -114,6 +114,7 @@ namespace TrexRunner
             _obstacleManager.IsEnabled = false;
             _gameOverScreen.IsEnabled = true;
 
+            _sfxHit.Play();
         }
 
         private void trex_JumpComplete(object sender, global::System.EventArgs e)
@@ -179,6 +180,22 @@ namespace TrexRunner
 
             State = GameState.Transition;
             _trex.BeginJump();
+
+            return true;
+        }
+
+        public bool Replay()
+        {
+            if (State != GameState.GameOver)
+                return false;
+
+            State = GameState.Playing;
+            _trex.Initialize();
+            _obstacleManager.Reset();
+            _obstacleManager.IsEnabled = true;
+            _groundManager.Initialize();
+            _gameOverScreen.IsEnabled = false;
+            _scoreBoard.Score = 0;
 
             return true;
         }

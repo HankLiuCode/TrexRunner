@@ -7,7 +7,7 @@ using TrexRunner.Graphics;
 
 namespace TrexRunner.Entities
 {
-    public class Trex : IGameEntity
+    public class Trex : IGameEntity, ICollidable
     {
         private const float RUN_ANIMATION_FRAME_LENGTH = 1 / 10f;
 
@@ -47,7 +47,7 @@ namespace TrexRunner.Entities
 
         private const float ACCELERATION_PPS_PER_SECOND = 10f;
 
-        private const int COLLISION_BOX_INSET = 3;
+        private const int COLLISION_BOX_INSET = 5;
 
         private Sprite _idleBackgroundSprite;
         private Sprite _idleSprite;
@@ -161,6 +161,7 @@ namespace TrexRunner.Entities
             Speed = START_SPEED;
             State = TrexState.Running;
             IsAlive = true;
+            Position = new Vector2(Position.X, _startPosY);
         }
 
         public void Update(GameTime gameTime)

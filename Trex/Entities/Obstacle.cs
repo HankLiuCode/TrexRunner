@@ -5,7 +5,7 @@ using System.Text;
 
 namespace TrexRunner.Entities
 {
-    public abstract class Obstacle : IGameEntity
+    public abstract class Obstacle : IGameEntity, ICollidable
     {
         public int DrawOrder { get; set; }
         public Vector2 Position { get; private set; }

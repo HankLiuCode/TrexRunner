@@ -81,5 +81,15 @@ namespace TrexRunner.Entities
             obstacle.DrawOrder = OBSTACLE_DRAW_ORDER;
             _entityManager.AddEntity(obstacle);
         }
+
+        public void Reset()
+        {
+            foreach(Obstacle obstacle in _entityManager.GetEntitiesOfType<Obstacle>())
+            {
+                _entityManager.RemoveEntity(obstacle);
+            }
+            _currentTargetDistance = 0;
+            _lastSpawnScore = -1;
+        }
     }
 }

@@ -78,6 +78,12 @@ namespace TrexRunner.Entities
         public void Initialize()
         {
             _groundTiles.Clear();
+
+            foreach(GroundTile gt in _entityManager.GetEntitiesOfType<GroundTile>())
+            {
+                _entityManager.RemoveEntity(gt);
+            }
+
             GroundTile groundTile = CreateRegularTile(0);
             _groundTiles.Add(groundTile);
 

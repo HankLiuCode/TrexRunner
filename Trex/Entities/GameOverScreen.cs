@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,12 +25,17 @@ namespace TrexRunner.Entities
         private Sprite _textSprite;
         private Sprite _buttonSprite;
 
+        private TRexGame _game;
+
         public Vector2 Position { get; set; }
         public bool IsEnabled { get; set; }
         private Vector2 ButtonPosition => Position + new Vector2(GAME_OVER_SPRITE_WIDTH/2 - BUTTON_SPRITE_WIDTH/2, GAME_OVER_SPRITE_HEIGHT + 20);
+
+        private Rectangle ButtonBounds 
+            => new Rectangle(ButtonPosition.ToPoint(), new Point(BUTTON_SPRITE_WIDTH, BUTTON_SPRITE_HEIGHT));
         public int DrawOrder => 100;
 
-        public GameOverScreen(Texture2D spriteSheet)
+        public GameOverScreen(Texture2D spriteSheet, TRexGame game)
         {
             _textSprite = new Sprite(
                 spriteSheet, 
@@ -46,6 +52,9 @@ namespace TrexRunner.Entities
                 BUTTON_SPRITE_WIDTH, 
                 BUTTON_SPRITE_HEIGHT
             );
+
+            _game = game;
+
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -60,6 +69,12 @@ namespace TrexRunner.Entities
         {
             if (!IsEnabled)
                 return;
+
+            MouseState mouseState = Mouse.GetState();
+            if (ButtonBounds.Contains(mouseState.Position) && mouseState.LeftButton == ButtonState.Pressed)
+            {
+                _game.Replay();
+            }
         }
     }
 }
