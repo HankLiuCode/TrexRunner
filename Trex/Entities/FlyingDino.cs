@@ -60,11 +60,11 @@ namespace TrexRunner.Entities
         {
             base.Update(gameTime);
 
-            Position = new Vector2(Position.X - SPEED_PPS * (float)gameTime.ElapsedGameTime.TotalSeconds, Position.Y);
-
-
-            if(_trex.IsAlive)
+            if (_trex.IsAlive)
+            {
+                Position = new Vector2(Position.X - SPEED_PPS * (float)gameTime.ElapsedGameTime.TotalSeconds, Position.Y);
                 _animation.Update(gameTime);
+            }
         }
     }
 }

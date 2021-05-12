@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -24,7 +25,12 @@ namespace TrexRunner.Entities
 
         private const int SCORE_MARGIN = 70;
         private const float SCORE_MULTIPLIER = 0.05f;
+
+        private const float FLASH_ANIMATION_FRAME_LENGTH = 1/5f;
+        private const int FLASH_ANIMTION_FLASH_COUNT = 4;
+
         private Texture2D _texture;
+        private SoundEffect _scoreSfx;
 
         public double Score { get; set; }
         public int DisplayScore => (int) Math.Floor(Score);
@@ -35,12 +41,15 @@ namespace TrexRunner.Entities
         public Vector2 Position { get; set; }
         private Trex _trex;
 
+        private bool _isPlayingFlashAnimation;
+        private float _flashAnimationTime;
 
-        public ScoreBoard(Texture2D texture, Vector2 position, Trex trex)
+        public ScoreBoard(Texture2D texture, Vector2 position, Trex trex, SoundEffect scoreSfx)
         {
             _texture = texture;
             _trex = trex;
             Position = position;
+            _scoreSfx = scoreSfx;
         }
 
         public void Draw(SpriteBatch spriteBatch, GameTime gameTime)
@@ -50,7 +59,8 @@ namespace TrexRunner.Entities
                 spriteBatch.Draw(_texture, new Vector2(Position.X - HI_TEXT_MARGIN, Position.Y), new Rectangle(TEXTURE_COORDS_HI_X, TEXTURE_COORDS_HI_Y, TEXTURE_COORDS_HI_WIDTH, TEXTURE_COORDS_HI_HEIGHT), Color.White);
                 DrawScore(spriteBatch, HighScore, Position.X);
             }
-            DrawScore(spriteBatch, DisplayScore, Position.X + SCORE_MARGIN);
+            if (!_isPlayingFlashAnimation || (int)(_flashAnimationTime / FLASH_ANIMATION_FRAME_LENGTH) % 2 != 0)
+                DrawScore(spriteBatch, DisplayScore, Position.X + SCORE_MARGIN);
         }
 
         private void DrawScore(SpriteBatch spriteBatch, int score, float startPosX)
@@ -84,7 +94,27 @@ namespace TrexRunner.Entities
 
         public void Update(GameTime gameTime)
         {
+            int oldScore = DisplayScore;
             Score += _trex.Speed * SCORE_MULTIPLIER * gameTime.ElapsedGameTime.TotalSeconds;
+
+            // only plays when the score crosses the 100 * n boundary
+            // DisplayScore % 100 isn't cleaner than this solution it will play at the beginning
+            if(!_isPlayingFlashAnimation && DisplayScore / 100 != oldScore / 100)
+            {
+                _isPlayingFlashAnimation = true;
+                _flashAnimationTime = 0;
+                _scoreSfx.Play(0.3f, 0, 0);
+            }
+
+            if (_isPlayingFlashAnimation)
+            {
+                _flashAnimationTime += (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+                if(_flashAnimationTime >= FLASH_ANIMATION_FRAME_LENGTH * FLASH_ANIMTION_FLASH_COUNT * 2)
+                {
+                    _isPlayingFlashAnimation = false;
+                }
+            }
         }
 
         private Rectangle GetDigitTextureBounds(int digit)

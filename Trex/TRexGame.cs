@@ -88,7 +88,7 @@ namespace TrexRunner
             _trex.JumpComplete += trex_JumpComplete;
             _trex.Died += trex_Died;
 
-            _scoreBoard = new ScoreBoard(_spriteSheetTexture, new Vector2(SCORE_BOARD_POS_X, SCORE_BOARD_POS_Y), _trex);
+            _scoreBoard = new ScoreBoard(_spriteSheetTexture, new Vector2(SCORE_BOARD_POS_X, SCORE_BOARD_POS_Y), _trex, _sfxScoreReached);
 
             _inputController = new InputController(_trex);
 
