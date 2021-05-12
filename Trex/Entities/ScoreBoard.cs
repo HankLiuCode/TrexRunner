@@ -6,7 +6,7 @@ using System.Text;
 
 namespace TrexRunner.Entities
 {
-    class ScoreBoard : IGameEntity
+    public class ScoreBoard : IGameEntity
     {
         private const int TEXTURE_COORDS_NUMBER_X = 655;
         private const int TEXTURE_COORDS_NUMBER_Y = 0;

@@ -39,6 +39,8 @@ namespace TrexRunner
         private InputController _inputController;
 
         private GroundManager _groundManager;
+        private ObstacleManager _obstacleManager;
+        private GameOverScreen _gameOverScreen;
 
         private GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch;
@@ -84,20 +86,34 @@ namespace TrexRunner
             _trex = new Trex(_spriteSheetTexture, new Vector2(TREX_START_POS_X, TREX_START_POS_Y - Trex.TREX_DEFAULT_SPRITE_HEIGHT), _sfxButtonPress);
             _trex.DrawOrder = 10;
             _trex.JumpComplete += trex_JumpComplete;
+            _trex.Died += trex_Died;
 
             _scoreBoard = new ScoreBoard(_spriteSheetTexture, new Vector2(SCORE_BOARD_POS_X, SCORE_BOARD_POS_Y), _trex);
-            //_scoreBoard.Score = 498;
-            //_scoreBoard.HighScore = 1234;
 
             _inputController = new InputController(_trex);
 
             _groundManager = new GroundManager(_spriteSheetTexture, _entityManager, _trex);
+            _obstacleManager = new ObstacleManager(_spriteSheetTexture, _entityManager, _trex, _scoreBoard);
+
+            _gameOverScreen = new GameOverScreen(_spriteSheetTexture);
+            _gameOverScreen.Position = new Vector2(WINDOW_WIDTH / 2 - GameOverScreen.GAME_OVER_SPRITE_WIDTH / 2, WINDOW_HEIGHT - 80);
 
             _entityManager.AddEntity(_trex);
             _entityManager.AddEntity(_groundManager);
+            _entityManager.AddEntity(_obstacleManager);
             _entityManager.AddEntity(_scoreBoard);
+            _entityManager.AddEntity(_gameOverScreen);
+            
 
             _groundManager.Initialize();
+        }
+
+        private void trex_Died(object sender, global::System.EventArgs e)
+        {
+            State = GameState.GameOver;
+            _obstacleManager.IsEnabled = false;
+            _gameOverScreen.IsEnabled = true;
+
         }
 
         private void trex_JumpComplete(object sender, global::System.EventArgs e)
@@ -107,6 +123,7 @@ namespace TrexRunner
                 State = GameState.Playing;
                 _trex.Initialize();
 
+                _obstacleManager.IsEnabled = true;
             }
         }
 
