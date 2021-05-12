@@ -197,6 +197,8 @@ namespace TrexRunner
             _gameOverScreen.IsEnabled = false;
             _scoreBoard.Score = 0;
 
+            _inputController.BlockInputTemporarily();
+
             return true;
         }
     }

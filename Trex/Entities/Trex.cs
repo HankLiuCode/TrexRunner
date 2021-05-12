@@ -48,6 +48,7 @@ namespace TrexRunner.Entities
         private const float ACCELERATION_PPS_PER_SECOND = 10f;
 
         private const int COLLISION_BOX_INSET = 5;
+        private const int DUCK_COLLISION_REDUCTION = 20;
 
         private Sprite _idleBackgroundSprite;
         private Sprite _idleSprite;
@@ -87,6 +88,13 @@ namespace TrexRunner.Entities
                 TREX_DEFAULT_SPRITE_HEIGHT
                 );
                 box.Inflate(-COLLISION_BOX_INSET, -COLLISION_BOX_INSET);
+
+                if(State == TrexState.Ducking)
+                {
+                    box.Y += DUCK_COLLISION_REDUCTION;
+                    box.Height -= DUCK_COLLISION_REDUCTION;
+                }
+
                 return box;
             }
         }

@@ -25,6 +25,8 @@ namespace TrexRunner.Entities
         private Sprite _textSprite;
         private Sprite _buttonSprite;
 
+        KeyboardState _previousKeyboardState;
+
         private TRexGame _game;
 
         public Vector2 Position { get; set; }
@@ -71,10 +73,18 @@ namespace TrexRunner.Entities
                 return;
 
             MouseState mouseState = Mouse.GetState();
-            if (ButtonBounds.Contains(mouseState.Position) && mouseState.LeftButton == ButtonState.Pressed)
+            KeyboardState keyboardState = Keyboard.GetState();
+
+            bool isKeyPressed = keyboardState.IsKeyDown(Keys.Space) || keyboardState.IsKeyDown(Keys.Up);
+            bool wasKeyPressed = _previousKeyboardState.IsKeyDown(Keys.Space) || _previousKeyboardState.IsKeyDown(Keys.Up);
+
+            if (ButtonBounds.Contains(mouseState.Position) && mouseState.LeftButton == ButtonState.Pressed 
+                || (wasKeyPressed && !isKeyPressed))
             {
                 _game.Replay();
             }
+
+            _previousKeyboardState = keyboardState;
         }
     }
 }
