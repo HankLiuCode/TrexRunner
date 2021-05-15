@@ -74,6 +74,5 @@ namespace TrexRunner.Entities
         {
             return _entities.OfType<T>();
         }
-
     }
 }

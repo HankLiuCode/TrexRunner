@@ -20,7 +20,7 @@ namespace TrexRunner.Entities
 
         private SpriteAnimation _animation;
 
-        public Star(Texture2D spriteSheet, Trex trex, Vector2 Position) : base(trex, Position)
+        public Star(Texture2D spriteSheet, Trex trex, Vector2 position) : base(trex, position)
         {
             _animation = SpriteAnimation.CreateSimpeAnimation(
                 spriteSheet,
